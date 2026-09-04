@@ -1,0 +1,126 @@
+# ============================================
+# Docker Build Context 排除清單
+# 用途: 減少 Docker 建置上下文,加快建置速度,降低映像大小
+# 最後更新: 2025-01-31
+# ============================================
+
+# ===== 大型資料目錄 (34GB+) =====
+# 這些目錄應透過 volumes 掛載,不應複製進映像
+data/
+var/
+backup/
+archive/
+storage/
+筆記分析/
+
+# ===== 執行期輸出 =====
+output/
+logs/
+saved_notes/
+videos/
+ollama_models/
+
+# ===== 特定模型檔案 (問題二進制) =====
+models/whisper/models--guillaumekln--faster-whisper-large-v2/
+models/whisper/models--guillaumekln--faster-whisper-medium/
+
+# ===== Node.js =====
+node_modules/
+source/frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ===== 虛擬環境 =====
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ===== Git =====
+.git/
+.gitignore
+.gitattributes
+
+# ===== IDE 設定檔 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===== Docker 檔案 (避免遞迴) =====
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# ===== 文檔 (建置時不需要) =====
+*.md
+docs/
+README*
+LICENSE
+CHANGELOG*
+
+# ===== 測試檔案 =====
+tests/
+test/
+*.test.js
+*.test.py
+*.spec.js
+*.spec.py
+coverage/
+
+# ===== 臨時檔案 =====
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+
+# ===== 大型媒體檔案 =====
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.flv
+*.wmv
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ===== OpenCode 設定 (開發工具) =====
+.opencode/
+.specify/
+.sisyphus/
+.github/
+openspec/
+
+# ===== 其他 =====
+.env
+.env.*
+*.log
+

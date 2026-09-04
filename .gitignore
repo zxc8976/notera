@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+source/frontend/node_modules/
+.venv/
+
+# Build outputs
+source/frontend/dist/
+var/output/
+var/tmp/
+var/log/
+var/notes/
+
+# Large/sensitive local data
+data/models/
+data/external/
+data/videos/
+data/images/
+data/**/id_*
+data/**/token*
+data/**/secrets*
+*.pem
+*.key
+
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# IDE & Tool caches
+.cursor/
+.specstory/
+
+# Docker volumes
+docker-volumes/
+# 媒體文件 - 不應該提交到代碼倉庫
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.heic
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# 輸出目錄
+var/output/images/
+var/output/tmp/
+source/frontend/public/images/*
+!source/frontend/public/images/.gitkeep
+source/frontend/dist/images/

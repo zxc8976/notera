@@ -1,0 +1,46 @@
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+httpx==0.25.2
+requests==2.31.0
+
+# AI/ML Core
+numpy==1.24.3
+scikit-learn==1.3.0
+
+# Audio Processing (已停用 - 音訊效果不佳且與 PaddleOCR 3.x 有 tokenizers 版本衝突)
+# faster-whisper==0.9.0
+# webrtcvad==2.0.10
+# 如需重新啟用,請參考 docs/WHISPER_REMOVAL_GUIDE.md
+
+# Computer Vision
+opencv-python-headless==4.8.0.76
+paddleocr>=3.3.0  # PaddleOCR-VL 依賴核心框架（模型權重由 HuggingFace 提供）
+paddlepaddle==3.2.0  # 預設使用官方 CPU 版
+paddlex[ocr]>=3.3.0  # PP-Structure 依賴額外組件
+torch>=2.0.0  # GPU CUDA 記憶體管理 (gpu_utils.py)
+
+# Video Processing
+scenedetect==0.6.2
+
+# Utilities
+ftfy
+regex
+tqdm
+matplotlib==3.7.2
+pyyaml==6.0.2
+pydantic==2.5.0
+webrtcvad==2.0.10
+openai-whisper
+ffmpeg-python
+
+# Additional dependencies for fixed features
+Pillow>=9.0.0
+pillow-heif>=0.10.0
+aiofiles>=23.0.0 
+pytest>=7.4
+psutil==5.9.8
+sympy>=1.12
+antlr4-python3-runtime>=4.11,<4.12
+pynvml>=11.5.0

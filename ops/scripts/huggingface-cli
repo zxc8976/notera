@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WIN_CLI="/mnt/c/Users/User/AppData/Roaming/Python/Python313/Scripts/huggingface-cli.exe"
+
+if [[ ! -x "${WIN_CLI}" ]]; then
+  echo "error: 找不到 huggingface-cli.exe，請確認已於 Windows 環境安裝 huggingface_hub" >&2
+  exit 1
+fi
+
+"${WIN_CLI}" "$@"

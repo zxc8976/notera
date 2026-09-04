@@ -1,0 +1,590 @@
+/* ========================================
+   Home.vue 全域 Markdown 樣式
+   用於動態生成的 markdown 內容
+   ======================================== */
+
+/* 🎨 代碼容器 - 完整功能 */
+.code-container {
+  background: #1e1e1e !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  margin: 24px 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.code-container:hover {
+  border-color: rgba(88, 166, 255, 0.5) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* 代碼頭部 - 語言標籤 + 複製按鈕 */
+.code-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  background: #252526 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.code-language {
+  font-family: 'JetBrains Mono', Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #9cdcfe !important;
+  background: transparent !important;
+  padding: 2px 6px !important;
+  border: none !important;
+  text-transform: lowercase !important;
+  letter-spacing: 0.6px !important;
+}
+
+.code-copy-btn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #d4d4d4 !important;
+  background: rgba(88, 166, 255, 0.18) !important;
+  padding: 6px 12px !important;
+  border: 1px solid rgba(88, 166, 255, 0.35) !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  opacity: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.code-copy-btn:hover {
+  background: rgba(88, 166, 255, 0.28) !important;
+  color: #ffffff !important;
+  border-color: rgba(88, 166, 255, 0.6) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.code-copy-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* 代碼塊本體 */
+.code-block {
+  background: #1e1e1e !important;
+  border: none !important;
+  padding: 20px !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  max-height: 650px !important;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: #d4d4d4 !important;
+}
+
+.code-block::-webkit-scrollbar {
+  height: 8px !important;
+  width: 8px !important;
+}
+
+.code-block::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.code-block code {
+  color: inherit !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
+  display: block !important;
+  white-space: pre !important; /* Keep formatting */
+  overflow-wrap: normal !important;
+}
+
+/* markdownRenderer 輸出的 <pre class="plain-code-block"> 兜底樣式 */
+pre.plain-code-block,
+.plain-code-block {
+  background: #1e1e1e !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin: 20px 0 !important;
+  overflow: auto !important;
+  font-family: 'JetBrains Mono', Consolas, monospace !important;
+  font-size: 14px !important;
+  color: #d4d4d4 !important;
+}
+
+.plain-code-block code,
+code.plain-code {
+  white-space: pre !important;
+  font-family: inherit !important;
+}
+
+/* 強制代碼塊內容換行 */
+pre code.hljs {
+  white-space: pre !important;
+  overflow-wrap: normal !important;
+}
+
+/* 數學公式 */
+.katex {
+  font-size: 1.15em !important;
+}
+
+/* 🎨 語法高亮增強 - Strong & Clear (Inspired by VS Code Dark+) */
+/* Support multiple code block structures: .code-block, .code-container, .plain-code-block, and direct .hljs */
+.code-block .hljs-comment,
+.code-container .hljs-comment,
+.plain-code-block .hljs-comment,
+.summary-result code.hljs .hljs-comment,
+.fallback-markdown code.hljs .hljs-comment {
+  color: #6a9955 !important;
+  font-style: italic !important;
+}
+
+.code-block .hljs-string,
+.code-container .hljs-string,
+.plain-code-block .hljs-string,
+.summary-result code.hljs .hljs-string,
+.fallback-markdown code.hljs .hljs-string {
+  color: #ce9178 !important; /* Orange-ish red */
+}
+
+.code-block .hljs-number,
+.code-container .hljs-number,
+.plain-code-block .hljs-number,
+.summary-result code.hljs .hljs-number,
+.fallback-markdown code.hljs .hljs-number {
+  color: #b5cea8 !important; /* Light green */
+}
+
+.code-block .hljs-keyword,
+.code-container .hljs-keyword,
+.plain-code-block .hljs-keyword,
+.summary-result code.hljs .hljs-keyword,
+.fallback-markdown code.hljs .hljs-keyword {
+  color: #569cd6 !important; /* Blue */
+  font-weight: bold !important;
+}
+
+.code-block .hljs-type,
+.code-block .hljs-class,
+.code-block .hljs-function,
+.code-container .hljs-type,
+.code-container .hljs-class,
+.code-container .hljs-function,
+.plain-code-block .hljs-type,
+.plain-code-block .hljs-class,
+.plain-code-block .hljs-function,
+.summary-result code.hljs .hljs-type,
+.summary-result code.hljs .hljs-class,
+.summary-result code.hljs .hljs-function,
+.fallback-markdown code.hljs .hljs-type,
+.fallback-markdown code.hljs .hljs-class,
+.fallback-markdown code.hljs .hljs-function {
+  color: #dcdcaa !important; /* Yellow */
+}
+
+.code-block .hljs-variable,
+.code-block .hljs-attr,
+.code-container .hljs-variable,
+.code-container .hljs-attr,
+.plain-code-block .hljs-variable,
+.plain-code-block .hljs-attr,
+.summary-result code.hljs .hljs-variable,
+.summary-result code.hljs .hljs-attr,
+.fallback-markdown code.hljs .hljs-variable,
+.fallback-markdown code.hljs .hljs-attr {
+  color: #9cdcfe !important; /* Light Blue */
+}
+
+.code-block .hljs-title,
+.code-container .hljs-title,
+.plain-code-block .hljs-title,
+.summary-result code.hljs .hljs-title,
+.fallback-markdown code.hljs .hljs-title {
+  color: #dcdcaa !important; /* Yellow */
+}
+
+.code-block .hljs-built_in,
+.code-container .hljs-built_in,
+.plain-code-block .hljs-built_in,
+.summary-result code.hljs .hljs-built_in,
+.fallback-markdown code.hljs .hljs-built_in {
+  color: #4ec9b0 !important; /* Teal */
+  font-weight: bold !important;
+}
+
+.code-block .hljs-operator,
+.code-block .hljs-punctuation,
+.code-container .hljs-operator,
+.code-container .hljs-punctuation,
+.plain-code-block .hljs-operator,
+.plain-code-block .hljs-punctuation,
+.summary-result code.hljs .hljs-operator,
+.summary-result code.hljs .hljs-punctuation,
+.fallback-markdown code.hljs .hljs-operator,
+.fallback-markdown code.hljs .hljs-punctuation {
+  color: #d4d4d4 !important;
+}
+
+
+/* 段落中的代碼術語 */
+code:not(.code-block code):not(.code-block *), .code-term {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #60a5fa !important;
+  padding: 4px 10px !important;
+  border-radius: 5px !important;
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-size: 0.92em !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* 粗體文字增強 (限縮到 .summary-result) */
+.summary-result strong, .summary-result b {
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+.summary-result li strong, .summary-result li b {
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+}
+
+.summary-result h1 strong, .summary-result h2 strong, .summary-result h3 strong, .summary-result h4 strong {
+  color: #60a5fa !important;
+  font-weight: 800 !important;
+}
+
+/* 📊 表格樣式增強 (限縮到 .summary-result) */
+.summary-result .table-wrapper {
+  width: 100% !important;
+  overflow-x: auto !important;
+  margin: 20px 0 !important;
+  border-radius: 8px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.summary-result table,
+.summary-result .enhanced-table {
+  width: 100% !important;
+  min-width: 100% !important;
+  border-collapse: collapse !important;
+  background: transparent !important;
+  table-layout: auto !important;
+}
+
+.summary-result thead {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+.summary-result th {
+  padding: 12px 16px !important;
+  text-align: left !important;
+  font-weight: 700 !important;
+  color: #60a5fa !important;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.5) !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+.summary-result td {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e5e7eb !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  vertical-align: top !important;
+}
+
+.summary-result tr:hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.summary-result table code {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: #60a5fa !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  font-size: 0.9em !important;
+}
+
+/* 🎯 重點排版 (限縮到 .summary-result) */
+.summary-result strong:first-child,
+.summary-result b:first-child,
+.summary-result p > strong:first-of-type,
+.summary-result p > b:first-of-type {
+  display: inline-block !important;
+  color: #fbbf24 !important;
+  font-weight: 900 !important;
+  font-size: 1.1em !important;
+  letter-spacing: 1px !important;
+  padding: 4px 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* 列表項目全域樣式 */
+.markdown-list-item {
+  background: rgba(26, 31, 41, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 14px 18px !important;
+  margin: 10px 0 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  line-height: 1.8 !important;
+}
+
+.markdown-list-item:hover {
+  transform: translateX(6px) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+  background: rgba(26, 31, 41, 0.8) !important;
+}
+
+/* H2 標題增強 (限縮到 .summary-result) */
+.summary-result h2 {
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1.5 !important;
+  margin-top: 2rem !important; /* Increase spacing */
+  padding-bottom: 0.5rem !important; /* Add separation */
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1) !important; /* Subtle divider */
+}
+
+.summary-result h2[style*="border-left"] {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.summary-result h2[style*="border-left"]:hover {
+  transform: translateX(6px) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* 段落增強 (限縮到 .summary-result) */
+.summary-result p {
+  line-height: 1.8 !important;
+  letter-spacing: 0.3px !important;
+  margin: 16px 0 !important; /* Increase paragraph spacing */
+}
+
+/* 空代碼區塊 */
+.empty-code {
+  background: rgba(30, 30, 30, 0.8) !important;
+  border: 2px dashed rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 30px !important;
+  margin: 20px 0 !important;
+  text-align: center !important;
+  color: rgba(156, 163, 175, 0.8) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+/* ⏱️ 場景時間標記 */
+.scene-timestamp {
+  display: inline-block !important;
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  padding: 4px 12px !important;
+  border-radius: 16px !important;
+  font-size: 0.9em !important;
+  font-weight: 600 !important;
+  margin: 12px 0 !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* ========================================
+   Note Card Structure (for v-html content)
+   ======================================== */
+
+/* Card container */
+.summary-result .note-card {
+  background: var(--el-bg-color-overlay, #ffffff);
+  border: 1px solid var(--el-border-color-light, #e4e7ed);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.summary-result .note-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--el-color-primary-light-5);
+}
+
+/* Card header */
+.summary-result .note-card-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--el-fill-color-light, #f5f7fa);
+  border-bottom: 1px solid var(--el-border-color-lighter, #ebeef5);
+  cursor: pointer;
+  user-select: none;
+}
+
+.summary-result .note-card-header:hover {
+  background: var(--el-fill-color, #f0f2f5);
+}
+
+/* Card body */
+.summary-result .note-card-body {
+  padding: 24px;
+  background: var(--el-bg-color, #ffffff);
+}
+
+.summary-result .note-card.collapsed .note-card-body {
+  display: none;
+}
+
+/* Toggle button */
+.summary-result .card-toggle-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.summary-result .card-toggle-btn:hover {
+  background: var(--el-fill-color-dark);
+  color: var(--el-color-primary);
+}
+
+.summary-result .note-card.collapsed .card-toggle-btn {
+  transform: rotate(-90deg);
+}
+
+/* Heading inside card header */
+.summary-result .note-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  margin: 0;
+}
+
+.summary-result .note-heading-icon {
+  font-size: 1.4rem;
+  color: var(--el-color-primary);
+}
+
+/* Japanese section enhancements (scoped) */
+.summary-result .note-heading--jp {
+  color: #f59e0b;
+}
+
+.summary-result .jp-section {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 8px 0 18px;
+}
+
+.summary-result .jp-section :is(p, li, td, th) {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+}
+
+/* Dark mode overrides */
+.dark .summary-result .note-card {
+  background: #1e1e20;
+  border-color: #333;
+}
+
+.dark .summary-result .note-card-header {
+  background: #262729;
+  border-color: #333;
+}
+
+.dark .summary-result .note-card-body {
+  background: #1e1e20;
+}
+
+/* ========================================
+   Container Overflow Fixes
+   Prevent text from overflowing container boundaries
+   ======================================== */
+
+.fallback-markdown,
+.summary-result {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  min-width: 0 !important; /* Prevent flexbox overflow */
+}
+
+.bilingual-markdown-renderer {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* Ensure pre/code blocks scroll horizontally instead of overflowing parent */
+.summary-result pre,
+.fallback-markdown pre {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+/* Fix text overflow for all nested elements */
+.summary-result *,
+.fallback-markdown * {
+  max-width: 100% !important;
+  word-break: break-word !important;
+}
+
+/* But preserve code formatting */
+.summary-result pre *,
+.fallback-markdown pre *,
+.summary-result code,
+.fallback-markdown code,
+.code-block *,
+.code-container * {
+  word-break: normal !important;
+}
+
+/* Ensure paragraphs and inline text wrap properly */
+.summary-result p,
+.fallback-markdown p,
+.summary-result li,
+.fallback-markdown li,
+.summary-result span,
+.fallback-markdown span {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  hyphens: auto !important;
+}

@@ -1,0 +1,649 @@
+/**
+ * 🎨 統一主題系統
+ * 解決多個CSS文件重複定義的問題
+ */
+
+/* ===== 核心變數定義 ===== */
+:root {
+  /* 🌈 顏色系統 */
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #0ea5e9;
+  
+  /* 📝 淺色主題 */
+  --bg-color: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --card-bg: #ffffff;
+  --card-hover: #f8fafc;
+  
+  --text-color: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-dark: #cbd5e1;
+  
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus: #3b82f6;
+  
+  --button-bg: #f8fafc;
+  --button-hover: #f1f5f9;
+  --button-active: #e2e8f0;
+  
+  /* 🎨 特殊顏色 */
+  --japanese-color: #dc2626;
+  --chinese-color: #3b82f6;
+  --japanese-bg: rgba(220, 38, 38, 0.05);
+  --chinese-bg: rgba(59, 130, 246, 0.05);
+  
+  /* 📏 間距系統 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* 🔲 圓角系統 */
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  
+  /* 🌫️ 陰影系統 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  
+  /* 🎭 過渡動畫 */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* 📱 響應式斷點 */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* ===== 深色主題 ===== */
+html[data-theme="dark"],
+html.dark,
+.dark-mode {
+  /* 🌑 深色背景 */
+  --bg-color: #0c1220;
+  --bg-secondary: #131b2f;
+  --bg-tertiary: #1e293b;
+  --card-bg: #151f32;
+  --card-hover: #1e2a44;
+  
+  /* 📝 深色文字 */
+  --text-color: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* 🔲 深色邊框 */
+  --border-color: #1e293b;
+  --border-light: #334155;
+  --border-dark: #0f172a;
+  
+  /* 📝 深色輸入框 */
+  --input-bg: #0f172a;
+  --input-border: #334155;
+  --input-focus: #3b82f6;
+  
+  /* 🔘 深色按鈕 */
+  --button-bg: #1e293b;
+  --button-hover: #334155;
+  --button-active: #475569;
+  
+  /* 🌫️ 深色陰影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== 全局基礎樣式 ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* ===== Element Plus 深色模式修復 ===== */
+html[data-theme="dark"] .el-button,
+html.dark .el-button,
+.dark-mode .el-button {
+  background-color: var(--button-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] .el-button:hover,
+html.dark .el-button:hover,
+.dark-mode .el-button:hover {
+  background-color: var(--button-hover);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .el-input__wrapper,
+html.dark .el-input__wrapper,
+.dark-mode .el-input__wrapper {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] .el-input__inner,
+html.dark .el-input__inner,
+.dark-mode .el-input__inner {
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] .el-select .el-input__wrapper,
+html.dark .el-select .el-input__wrapper,
+.dark-mode .el-select .el-input__wrapper {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  box-shadow: 0 0 0 1px var(--input-border) inset !important;
+}
+
+html[data-theme="dark"] .el-select .el-input__inner,
+html.dark .el-select .el-input__inner,
+.dark-mode .el-select .el-input__inner {
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-select:hover .el-input__wrapper,
+html.dark .el-select:hover .el-input__wrapper,
+.dark-mode .el-select:hover .el-input__wrapper {
+  border-color: var(--border-light) !important;
+}
+
+html[data-theme="dark"] .el-select.is-focus .el-input__wrapper,
+html[data-theme="dark"] .el-select .el-input__wrapper.is-focus,
+html[data-theme="dark"] .el-select .el-input__wrapper:focus-within,
+html.dark .el-select.is-focus .el-input__wrapper,
+html.dark .el-select .el-input__wrapper.is-focus,
+html.dark .el-select .el-input__wrapper:focus-within,
+.dark-mode .el-select.is-focus .el-input__wrapper,
+.dark-mode .el-select .el-input__wrapper.is-focus,
+.dark-mode .el-select .el-input__wrapper:focus-within {
+  border-color: var(--input-focus) !important;
+  box-shadow: 0 0 0 1px var(--input-focus) inset !important;
+}
+
+html[data-theme="dark"] .el-select .el-input__inner::placeholder,
+html.dark .el-select .el-input__inner::placeholder,
+.dark-mode .el-select .el-input__inner::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"] .el-select-dropdown,
+html.dark .el-select-dropdown,
+.dark-mode .el-select-dropdown {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-select-dropdown__item,
+html.dark .el-select-dropdown__item,
+.dark-mode .el-select-dropdown__item {
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] .el-select-dropdown__item:hover,
+html.dark .el-select-dropdown__item:hover,
+.dark-mode .el-select-dropdown__item:hover {
+  background-color: var(--card-hover) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-select-dropdown__item.is-selected,
+html.dark .el-select-dropdown__item.is-selected,
+.dark-mode .el-select-dropdown__item.is-selected {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+  color: var(--text-color) !important;
+}
+
+/* ===== 表格樣式 ===== */
+html[data-theme="dark"] .el-table,
+html.dark .el-table,
+.dark-mode .el-table {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-table th,
+html.dark .el-table th,
+.dark-mode .el-table th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .el-table td,
+html.dark .el-table td,
+.dark-mode .el-table td {
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .el-table tr,
+html.dark .el-table tr,
+.dark-mode .el-table tr {
+  background-color: var(--card-bg) !important;
+}
+
+html[data-theme="dark"] .el-table__body tr:hover > td,
+html[data-theme="dark"] .el-table__body tr.el-table__row:hover > td,
+html[data-theme="dark"] .el-table__body tr.current-row > td,
+html.dark .el-table__body tr:hover > td,
+html.dark .el-table__body tr.el-table__row:hover > td,
+html.dark .el-table__body tr.current-row > td,
+.dark-mode .el-table__body tr:hover > td,
+.dark-mode .el-table__body tr.el-table__row:hover > td,
+.dark-mode .el-table__body tr.current-row > td {
+  background-color: var(--card-hover) !important;
+  color: var(--text-color) !important;
+}
+
+/* ===== 卡片樣式 ===== */
+html[data-theme="dark"] .el-card,
+html.dark .el-card,
+.dark-mode .el-card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-card__header,
+html.dark .el-card__header,
+.dark-mode .el-card__header {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* ===== 消息框樣式 ===== */
+html[data-theme="dark"] .el-message,
+html.dark .el-message,
+.dark-mode .el-message {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+html[data-theme="dark"] .el-message--success,
+html.dark .el-message--success,
+.dark-mode .el-message--success {
+  background-color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="dark"] .el-message--warning,
+html.dark .el-message--warning,
+.dark-mode .el-message--warning {
+  background-color: var(--warning-color) !important;
+  border-color: var(--warning-color) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="dark"] .el-message--error,
+html.dark .el-message--error,
+.dark-mode .el-message--error {
+  background-color: var(--danger-color) !important;
+  border-color: var(--danger-color) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="dark"] .el-message--info,
+html.dark .el-message--info,
+.dark-mode .el-message--info {
+  background-color: var(--info-color) !important;
+  border-color: var(--info-color) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* ===== 對話框樣式 ===== */
+html[data-theme="dark"] .el-dialog,
+html.dark .el-dialog,
+.dark-mode .el-dialog {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-dialog__header,
+html.dark .el-dialog__header,
+.dark-mode .el-dialog__header {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .el-dialog__title,
+html.dark .el-dialog__title,
+.dark-mode .el-dialog__title {
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .el-dialog__body,
+html.dark .el-dialog__body,
+.dark-mode .el-dialog__body {
+  color: var(--text-color) !important;
+}
+
+/* ===== 滾動條樣式 ===== */
+html[data-theme="dark"] .el-scrollbar__thumb,
+html.dark .el-scrollbar__thumb,
+.dark-mode .el-scrollbar__thumb {
+  background-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .el-scrollbar__thumb:hover,
+html.dark .el-scrollbar__thumb:hover,
+.dark-mode .el-scrollbar__thumb:hover {
+  background-color: var(--border-light) !important;
+}
+
+/* ===== 筆記內容樣式 ===== */
+html[data-theme="dark"] .notion-note-container,
+html[data-theme="dark"] .notion-content-wrapper,
+html[data-theme="dark"] .llm-note-markdown,
+html.dark .notion-note-container,
+html.dark .notion-content-wrapper,
+html.dark .llm-note-markdown,
+.dark-mode .notion-note-container,
+.dark-mode .notion-content-wrapper,
+.dark-mode .llm-note-markdown {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+html[data-theme="dark"] .notion-block,
+html[data-theme="dark"] .block-content,
+html.dark .notion-block,
+html.dark .block-content,
+.dark-mode .notion-block,
+.dark-mode .block-content {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .notion-content-wrapper *,
+html[data-theme="dark"] .llm-note-markdown *,
+html.dark .notion-content-wrapper *,
+html.dark .llm-note-markdown *,
+.dark-mode .notion-content-wrapper *,
+.dark-mode .llm-note-markdown * {
+  color: var(--text-color) !important;
+}
+
+/* 長字串換行，避免內容撐出視窗 */
+.notion-content-wrapper p,
+.notion-content-wrapper li,
+.notion-content-wrapper td,
+.notion-content-wrapper th,
+.notion-content-wrapper blockquote,
+.llm-note-markdown p,
+.llm-note-markdown li,
+.llm-note-markdown td,
+.llm-note-markdown th,
+.llm-note-markdown blockquote {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-theme="dark"] .notion-content-wrapper h1,
+html[data-theme="dark"] .notion-content-wrapper h2,
+html[data-theme="dark"] .notion-content-wrapper h3,
+html[data-theme="dark"] .notion-content-wrapper h4,
+html[data-theme="dark"] .notion-content-wrapper h5,
+html[data-theme="dark"] .notion-content-wrapper h6,
+html[data-theme="dark"] .llm-note-markdown h1,
+html[data-theme="dark"] .llm-note-markdown h2,
+html[data-theme="dark"] .llm-note-markdown h3,
+html[data-theme="dark"] .llm-note-markdown h4,
+html[data-theme="dark"] .llm-note-markdown h5,
+html[data-theme="dark"] .llm-note-markdown h6,
+html.dark .notion-content-wrapper h1,
+html.dark .notion-content-wrapper h2,
+html.dark .notion-content-wrapper h3,
+html.dark .notion-content-wrapper h4,
+html.dark .notion-content-wrapper h5,
+html.dark .notion-content-wrapper h6,
+html.dark .llm-note-markdown h1,
+html.dark .llm-note-markdown h2,
+html.dark .llm-note-markdown h3,
+html.dark .llm-note-markdown h4,
+html.dark .llm-note-markdown h5,
+html.dark .llm-note-markdown h6,
+.dark-mode .notion-content-wrapper h1,
+.dark-mode .notion-content-wrapper h2,
+.dark-mode .notion-content-wrapper h3,
+.dark-mode .notion-content-wrapper h4,
+.dark-mode .notion-content-wrapper h5,
+.dark-mode .notion-content-wrapper h6,
+.dark-mode .llm-note-markdown h1,
+.dark-mode .llm-note-markdown h2,
+.dark-mode .llm-note-markdown h3,
+.dark-mode .llm-note-markdown h4,
+.dark-mode .llm-note-markdown h5,
+.dark-mode .llm-note-markdown h6 {
+  color: var(--text-color) !important;
+}
+
+/* ===== 程式碼區塊樣式 ===== */
+html[data-theme="dark"] .notion-content-wrapper pre,
+html[data-theme="dark"] .notion-content-wrapper code,
+html.dark .notion-content-wrapper pre,
+html.dark .notion-content-wrapper code,
+.dark-mode .notion-content-wrapper pre,
+.dark-mode .notion-content-wrapper code {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .llm-note-markdown pre,
+html.dark .llm-note-markdown pre,
+.dark-mode .llm-note-markdown pre {
+  background: linear-gradient(180deg, #0d1117 0%, #0a0f18 50%, #0f172a 100%) !important;
+  color: #eaf1ff !important;
+  border: 1px solid #1c2535 !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.38) !important;
+}
+
+html[data-theme="dark"] .llm-note-markdown code,
+html.dark .llm-note-markdown code,
+.dark-mode .llm-note-markdown code {
+  background: rgba(12, 17, 24, 0.85) !important;
+  color: #eaf1ff !important;
+  border: 1px solid #1c2535 !important;
+}
+
+/* 強制統一 code block 外觀（避免舊樣式覆蓋） */
+.plain-code-block,
+.plain-code-block code,
+.llm-note-markdown pre,
+.llm-note-markdown pre code,
+.fallback-markdown pre,
+.fallback-markdown pre code {
+  background: #1f1f23 !important;
+  color: #e8edf8 !important;
+  border: 1px solid #2c2f38 !important;
+  border-radius: 12px !important;
+  padding: 16px 18px 18px 18px !important;
+  margin: 18px 0 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  white-space: pre !important;
+  word-break: normal !important;
+}
+
+/* ===== 表格樣式 ===== */
+html[data-theme="dark"] .notion-content-wrapper table,
+html[data-theme="dark"] .llm-note-markdown table,
+html.dark .notion-content-wrapper table,
+html.dark .llm-note-markdown table,
+.dark-mode .notion-content-wrapper table,
+.dark-mode .llm-note-markdown table {
+  background-color: transparent !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .notion-content-wrapper table th,
+html[data-theme="dark"] .llm-note-markdown table th,
+html.dark .notion-content-wrapper table th,
+html.dark .llm-note-markdown table th,
+.dark-mode .notion-content-wrapper table th,
+.dark-mode .llm-note-markdown table th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .notion-content-wrapper table td,
+html[data-theme="dark"] .llm-note-markdown table td,
+html.dark .notion-content-wrapper table td,
+html.dark .llm-note-markdown table td,
+.dark-mode .notion-content-wrapper table td,
+.dark-mode .llm-note-markdown table td {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* ===== 日文學習樣式 ===== */
+html[data-theme="dark"] .jp-learning-section-title,
+html.dark .jp-learning-section-title,
+.dark-mode .jp-learning-section-title {
+  color: var(--chinese-color) !important;
+  background-color: var(--chinese-bg) !important;
+  border-color: var(--chinese-color) !important;
+}
+
+html[data-theme="dark"] .jp-original-text,
+html.dark .jp-original-text,
+.dark-mode .jp-original-text {
+  color: var(--japanese-color) !important;
+  background-color: var(--japanese-bg) !important;
+}
+
+html[data-theme="dark"] .jp-translation,
+html[data-theme="dark"] .jp-meaning,
+html.dark .jp-translation,
+html.dark .jp-meaning,
+.dark-mode .jp-translation,
+.dark-mode .jp-meaning {
+  color: var(--success-color) !important;
+}
+
+html[data-theme="dark"] .jp-reading,
+html.dark .jp-reading,
+.dark-mode .jp-reading {
+  color: var(--warning-color) !important;
+}
+
+/* ===== 動畫過渡 ===== */
+html[data-theme="dark"] *,
+html.dark *,
+.dark-mode * {
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal) !important;
+}
+
+/* ===== 強制移除白色背景 ===== */
+html[data-theme="dark"] [style*="background-color: white"],
+html[data-theme="dark"] [style*="background-color: #ffffff"],
+html[data-theme="dark"] [style*="background-color: #fff"],
+html.dark [style*="background-color: white"],
+html.dark [style*="background-color: #ffffff"],
+html.dark [style*="background-color: #fff"],
+.dark-mode [style*="background-color: white"],
+.dark-mode [style*="background-color: #ffffff"],
+.dark-mode [style*="background-color: #fff"] {
+  background-color: transparent !important;
+}
+
+/* ===== 確保所有Element Plus組件文字顏色正確 ===== */
+html[data-theme="dark"] [class*="el-"],
+html.dark [class*="el-"],
+.dark-mode [class*="el-"] {
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] [class*="el-"] input,
+html[data-theme="dark"] [class*="el-"] textarea,
+html[data-theme="dark"] [class*="el-"] select,
+html.dark [class*="el-"] input,
+html.dark [class*="el-"] textarea,
+html.dark [class*="el-"] select,
+.dark-mode [class*="el-"] input,
+.dark-mode [class*="el-"] textarea,
+.dark-mode [class*="el-"] select {
+  color: var(--text-color) !important;
+  background-color: var(--input-bg) !important;
+}
+
+/* ===== 入場動畫 (代替 vue transition) ===== */
+.settings-panel, .collapsible-content, .folder-panel {
+  animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top;
+}
+
+@keyframes slideDownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar 美化 */
+.app-sidebar {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 2px 0 12px rgba(0,0,0,0.05);
+  z-index: 20;
+}
+html.dark .app-sidebar {
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-color) 100%);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.collapsible-panel {
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+.collapsible-panel:hover {
+  background: rgba(128, 128, 128, 0.02);
+}
+

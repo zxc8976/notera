@@ -1,0 +1,177 @@
+# Docker Compose配置 - 自動筆記生成系統 v1.0.2
+# 系統整理版本 - UI/Backend 樣式同步（2025-12-13）
+# 更新：場景筆記去重修復、容器版號調整、清理程序校正
+
+services:
+  frontend:
+    build:
+      context: ../../source/frontend
+      dockerfile: Dockerfile
+    container_name: notegen-frontend-enhanced
+    ports:
+      - "${FRONTEND_PORT:-51730}:5173"
+    volumes:
+      - ../../source/frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_BASE_URL=http://notegen-backend-enhanced:8000
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=5173
+      - VITE_HMR_CLIENT_PORT=${FRONTEND_PORT:-51730}
+      - VITE_UI_VERSION=3.1.7-fix
+      - VITE_BUILD_DATE=2025-12-13
+      - VITE_ARCHITECTURE_VERSION=modular-layouts
+      - VITE_BUILD_TIMESTAMP=${BUILD_TIMESTAMP:-$(date +%Y%m%d_%H%M%S)}
+      - VITE_FEATURES=unified-theme-system,modular-navigation,layout-system,asset-inventory,accented-note-headings
+      - VITE_THEME_SYSTEM_FIXED=true
+      - VITE_THEME_STORAGE_KEY=pref-theme
+      - VITE_THEME_DEFAULT=light
+      - VITE_DIAGNOSTICS_TIMESTAMP=true
+      - VITE_NOTE_HEADING_VARIANT=accented
+    networks:
+      - app_network
+    depends_on:
+      - notegen
+    restart: unless-stopped
+
+  notegen:
+    build:
+      context: ../../
+      dockerfile: ops/docker/Dockerfile
+      args:
+        USE_PADDLE_GPU: ${USE_PADDLE_GPU:-true}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    image: notegen-backend-enhanced:proxy
+    container_name: notegen-backend-enhanced
+    shm_size: '2g'
+    ports:
+      - "18000:8000"
+    volumes:
+      - ../../:/app
+      - ../../data/models/paddleocr_vl:/app/data/models/paddleocr_vl
+      - F:/上課影片:/app/data/external/f/上課影片
+      - F:/講義圖片:/app/data/external/f/講義圖片
+      - /mnt/c/Users:/app/data/external/c/Users
+      - ../../var/output:/app/var/output
+      - ../../var/log:/app/var/log
+      - ../../var/notes:/app/var/notes
+      - ../../var/tmp:/app/var/tmp
+      - paddleocr_models:/root/.paddleocr  # 快取 PaddleOCR 模型，避免重複下載
+    environment:
+      - LD_LIBRARY_PATH=/usr/local/cuda/lib64
+      - PYTHONPATH=/app:/app/source
+      - OLLAMA_BASE=https://ollama.com/api  # 🔧 雲端推理,GPU零負載
+      - OLLAMA_FALLBACK_BASE=http://ollama_local:11434  # 保留本地作為後備
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY}  # 雲端模型認證用
+      - OLLAMA_PORT=${OLLAMA_PORT:-11434}
+      - QWEN_VL_MODEL=qwen3-vl:235b-cloud  # 覆寫 Dockerfile 的硬編碼
+      - FFMPEG_BIN=/usr/bin/ffmpeg
+      - FFPROBE_BIN=/usr/bin/ffprobe
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - NOTEGEN_VERSION=1.0.2
+      - SYSTEM_CLEANUP_DATE=2025-11-12
+      - UI_FIXED=true
+      - ARCHITECTURE_REFACTORED=true
+      - FRONTEND_ARCHITECTURE=modular-layouts
+      - CSS_SYSTEM=unified-variables
+      - THEME_SYSTEM_FIXED=true
+      - HEIC_PROCESSOR_UNIFIED=true
+      - ASSET_INVENTORY_COMPLETE=true
+      - NOTE_ANALYSIS_DEBUG=true
+      - LLM_FALLBACK_ENABLED=true
+      - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
+      - ENABLE_MATH_TOOL=true
+      - PADDLEOCR_VL_MODEL_ROOT=/app/data/models/paddleocr_vl
+      - PADDLEOCR_VL_LAYOUT_DIR=/app/data/models/paddleocr_vl/PP-DocLayoutV2
+      - NOTE_HEADINGS_VARIANT=accented
+      - OMP_NUM_THREADS=1
+      - OPENBLAS_NUM_THREADS=1
+      - MKL_NUM_THREADS=1
+    depends_on:
+      - ollama_local
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 8G
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - app_network
+    extra_hosts:
+      - "ollama:host-gateway"
+      - "host.docker.internal:host-gateway"
+    gpus: all
+    restart: unless-stopped
+    # 直接限制 (非 Swarm) 着重在 Docker Desktop/W10 環境有效
+    mem_limit: 8g
+    cpus: 3.0
+
+  notegen-tests:
+    build:
+      context: ../../
+      dockerfile: ops/docker/Dockerfile
+      args:
+        USE_PADDLE_GPU: ${USE_PADDLE_GPU:-true}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    image: notegen-backend-enhanced:proxy
+    command: ["pytest", "-q", "--disable-warnings", "--maxfail=1"]
+    volumes:
+      - ../../:/app
+    environment:
+      - PYTHONPATH=/app:/app/source
+      - NOTEGEN_VERSION=1.0.2
+      - TEST_PROFILE=integration
+      - PADDLEOCR_VL_MODEL_ROOT=/app/data/models/paddleocr_vl
+      - PADDLEOCR_VL_LAYOUT_DIR=/app/data/models/paddleocr_vl/PP-DocLayoutV2
+      - NOTE_HEADINGS_VARIANT=accented
+      - OLLAMA_BASE=http://ollama_local:11434
+      - OLLAMA_FALLBACK_BASE=http://ollama_local:11434
+      - OMP_NUM_THREADS=1
+      - OPENBLAS_NUM_THREADS=1
+      - MKL_NUM_THREADS=1
+    profiles:
+      - tests
+    networks:
+      - app_network
+
+  # Ollama 服務（容器內部互通，避免 403）
+  ollama_local:
+    image: ollama/ollama:latest
+    container_name: ollama_local
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ../../data/models/ollama:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY}  # 雲端模型認證用
+    networks:
+      - app_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+networks:
+  app_network:
+    name: notegen_network
+    driver: bridge
+
+volumes:
+  paddleocr_models:
+    driver: local

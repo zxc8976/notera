@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-10-25T06:59:30.893065+00:00",
+  "cpu": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "architecture": "AMD64",
+    "python": "3.13.7",
+    "hostname": "Ken",
+    "physical_cores": 8,
+    "logical_cores": 16,
+    "current_freq_mhz": 3801.0,
+    "load": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "memory": {
+    "total_gb": 63.91,
+    "available_gb": 44.34,
+    "percent": 30.6,
+    "swap_total_gb": 13.5,
+    "swap_used_gb": 0.0,
+    "swap_percent": 0.0
+  },
+  "disk": {
+    "root": {
+      "mount": "/",
+      "total_gb": 3726.01,
+      "used_gb": 1576.88,
+      "free_gb": 2149.12
+    },
+    "workspace": {
+      "mount": "F:\\",
+      "total_gb": 3726.01,
+      "used_gb": 1576.88,
+      "free_gb": 2149.12
+    }
+  },
+  "gpu": {
+    "available": false,
+    "error": "pynvml not installed"
+  },
+  "env": {
+    "CUDA_VISIBLE_DEVICES": null,
+    "NVIDIA_VISIBLE_DEVICES": null
+  }
+}

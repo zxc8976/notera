@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API 測試</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a1a; color: #fff; }
+        .test { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .success { color: #10a37f; }
+        .error { color: #ef4444; }
+        img { max-width: 300px; margin: 10px 0; border: 2px solid #444; }
+        pre { background: #000; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 系統診斷測試</h1>
+    
+    <div class="test">
+        <h2>1. GPU 數據測試</h2>
+        <button onclick="testGPU()">測試 GPU API</button>
+        <div id="gpu-result"></div>
+    </div>
+
+    <div class="test">
+        <h2>2. 圖片載入測試</h2>
+        <button onclick="testImages()">測試圖片</button>
+        <div id="image-result"></div>
+    </div>
+
+    <div class="test">
+        <h2>3. 筆記內容測試</h2>
+        <button onclick="testNote()">測試筆記API</button>
+        <div id="note-result"></div>
+    </div>
+
+    <script>
+        async function testGPU() {
+            const result = document.getElementById('gpu-result');
+            try {
+                const response = await fetch('/api/diagnose');
+                const data = await response.json();
+                result.innerHTML = `
+                    <div class="success">✅ GPU 數據獲取成功:</div>
+                    <pre>${JSON.stringify({
+                        cpu_percent: data.cpu_percent,
+                        ram_percent: data.ram_percent,
+                        gpu_util_percent: data.gpu_util_percent,
+                        gpu_temp_c: data.gpu_temp_c,
+                        gpu_mem_used_mb: data.gpu_mem_used_mb,
+                        gpu_mem_total_mb: data.gpu_mem_total_mb
+                    }, null, 2)}</pre>
+                `;
+            } catch (e) {
+                result.innerHTML = `<div class="error">❌ 錯誤: ${e.message}</div>`;
+            }
+        }
+
+        async function testImages() {
+            const result = document.getElementById('image-result');
+            const testImages = [
+                '/images/download.jpg',
+                '/images/reprocess_9068.jpg',
+                '/images/2025_07_31_14_13_IMG_9068_converted.jpg'
+            ];
+
+            let html = '';
+            for (const imgPath of testImages) {
+                try {
+                    const response = await fetch(imgPath, { method: 'HEAD' });
+                    const size = response.headers.get('content-length');
+                    html += `
+                        <div>
+                            <div class="${response.ok ? 'success' : 'error'}">
+                                ${response.ok ? '✅' : '❌'} ${imgPath} 
+                                (${response.status}, ${size} bytes)
+                            </div>
+                            ${response.ok ? `<img src="${imgPath}" alt="test" 
+                                onerror="this.parentElement.innerHTML+='<div class=error>載入失敗!</div>'"
+                                onload="this.parentElement.innerHTML+='<div class=success>載入成功!</div>'">` : ''}
+                        </div>
+                    `;
+                } catch (e) {
+                    html += `<div class="error">❌ ${imgPath}: ${e.message}</div>`;
+                }
+            }
+            result.innerHTML = html;
+        }
+
+        async function testNote() {
+            const result = document.getElementById('note-result');
+            try {
+                const response = await fetch('/api/result/root_combined');
+                const data = await response.json();
+                const hasImages = (data.content || '').includes('![');
+                const imageCount = ((data.content || '').match(/!\[/g) || []).length;
+                
+                result.innerHTML = `
+                    <div class="${hasImages ? 'success' : 'error'}">
+                        ${hasImages ? '✅' : '❌'} 筆記內容包含圖片: ${hasImages}
+                    </div>
+                    <div>圖片數量: ${imageCount}</div>
+                    <div>內容長度: ${(data.content || '').length} 字符</div>
+                    ${hasImages ? '<pre>' + (data.content || '').match(/!\[.*?\]\([^)]+\)/g).join('\n') + '</pre>' : ''}
+                `;
+            } catch (e) {
+                result.innerHTML = `<div class="error">❌ 錯誤: ${e.message}</div>`;
+            }
+        }
+
+        // 自動執行所有測試
+        window.onload = () => {
+            setTimeout(() => {
+                testGPU();
+                testImages();
+                testNote();
+            }, 500);
+        };
+    </script>
+</body>
+</html>

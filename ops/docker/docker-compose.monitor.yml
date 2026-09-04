@@ -1,0 +1,24 @@
+services:
+  ollama-monitor:
+    image: python:3.11-slim
+    container_name: ollama-monitor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ops/scripts/ollama_monitor.py:/app/monitor.py
+      - /var/log:/var/log
+    working_dir: /app
+    command: python monitor.py
+    restart: unless-stopped
+    networks:
+      - notegen_network
+    environment:
+      - PYTHONUNBUFFERED=1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  notegen_network:
+    external: true

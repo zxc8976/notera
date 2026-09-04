@@ -1,0 +1,423 @@
+/* 數學公式樣式 */
+.math-formula {
+  text-align: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--el-bg-color-page);
+  border-radius: 8px;
+  border: 1px solid var(--el-border-color-light);
+  font-family: 'KaTeX_Math', 'Times New Roman', serif;
+  font-size: 1.1em;
+  overflow-x: auto;
+}
+
+.math-inline {
+  background: var(--el-bg-color-page);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: 'KaTeX_Math', 'Times New Roman', serif;
+  font-size: 0.95em;
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+/* 代碼片段樣式 */
+.code-block-container {
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--el-border-color-light);
+  background: var(--el-bg-color-page);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.code-language {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.code-copy-btn {
+  background: var(--el-color-primary);
+  color: white;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-copy-btn:hover {
+  background: var(--el-color-primary-light-3);
+  transform: translateY(-1px);
+}
+
+.code-copy-btn.copied {
+  background: var(--el-color-success);
+}
+
+.code-block-container pre {
+  margin: 0;
+  padding: 1rem;
+  background: var(--el-bg-color-page);
+  overflow-x: auto;
+}
+
+.code-block-container code {
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* 術語和練習區塊樣式 */
+details.terms,
+details.practice {
+  margin: 1rem 0;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+details.terms summary,
+details.practice summary {
+  padding: 0.8rem 1rem;
+  background: var(--el-bg-color);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  border-bottom: 1px solid var(--el-border-color-light);
+  transition: background-color 0.2s ease;
+}
+
+details.terms summary:hover,
+details.practice summary:hover {
+  background: var(--el-bg-color-page);
+}
+
+details.terms[open] summary,
+details.practice[open] summary {
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+details.terms .content,
+details.practice .content {
+  padding: 1rem;
+  background: var(--el-bg-color-page);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .math-formula {
+    font-size: 1em;
+    padding: 0.8rem;
+  }
+  
+  .code-block-header {
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .code-block-container pre {
+    padding: 0.8rem;
+  }
+  
+  .code-block-container code {
+    font-size: 0.85rem;
+  }
+}
+
+/* ==============================================
+   OPTIMAL READING MODE ENHANCEMENTS
+   ============================================== */
+
+/* Reading Container - Centered, Max-width for Readability */
+.notion-note-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  line-height: 1.75;
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+}
+
+/* Headings - Clear Hierarchy */
+.notion-note-container h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 2rem 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--el-border-color);
+  color: var(--el-text-color-primary);
+  line-height: 1.3;
+}
+
+.notion-note-container h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 1.75rem 0 1rem;
+  color: var(--el-text-color-primary);
+  line-height: 1.4;
+}
+
+
+.notion-note-container h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.875rem;
+  color: var(--el-text-color-regular);
+  line-height: 1.45;
+}
+
+.notion-note-container h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem;
+  color: var(--el-text-color-regular);
+}
+
+/* Paragraphs - Comfortable Reading */
+.notion-note-container p {
+  margin: 1rem 0;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* Images - Responsive, Centered, With Shadow */
+.notion-note-container img,
+.notion-note-container .mk-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 2rem auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notion-note-container img:hover,
+.notion-note-container .mk-img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  cursor: zoom-in;
+}
+
+/* Image Captions (if alt text exists) */
+.notion-note-container img[alt]:not([alt=""]):after {
+  content: attr(alt);
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--el-text-color-secondary);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Lists - Better Spacing */
+.notion-note-container ul,
+.notion-note-container ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+  line-height: 1.8;
+}
+
+.notion-note-container li {
+  margin: 0.5rem 0;
+}
+
+.notion-note-container ul > li::marker {
+  color: var(--el-color-primary);
+}
+
+/* Tables - Clean, Bordered, Responsive */
+.notion-note-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  background: var(--el-bg-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.notion-note-container th {
+  background: var(--el-color-primary-light-9);
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--el-border-color);
+}
+
+.notion-note-container td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.notion-note-container tr:last-child td {
+  border-bottom: none;
+}
+
+.notion-note-container tr:hover {
+  background: var(--el-bg-color-page);
+}
+
+/* Blockquotes - Styled Emphasis */
+.notion-note-container blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--el-color-primary);
+  background: var(--el-bg-color-page);
+  border-radius: 0 8px 8px 0;
+  color: var(--el-text-color-regular);
+  font-style: italic;
+}
+
+/* Horizontal Rules - Subtle Dividers */
+.notion-note-container hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--el-border-color-light);
+  opacity: 0.6;
+}
+
+/* Links - Clear, Accessible */
+.notion-note-container a {
+  color: var(--el-color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.notion-note-container a:hover {
+  border-bottom-color: var(--el-color-primary);
+}
+
+/* Strong/Bold - Emphasis */
+.notion-note-container strong {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+/* Em/Italic - Subtle Style */
+.notion-note-container em {
+  font-style: italic;
+  color: var(--el-text-color-regular);
+}
+
+/* Inline Code - Distinct from Text */
+.notion-note-container code:not(pre code) {
+  background: var(--el-bg-color-page);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: var(--el-color-danger);
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+/* Math Block - Centered, Highlighted */
+.notion-note-container .math-block {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--el-bg-color-page);
+  border-radius: 8px;
+  border: 1px solid var(--el-border-color-light);
+  overflow-x: auto;
+  text-align: center;
+}
+
+.notion-note-container .math-text-block {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--el-color-primary-light-9) 0%, var(--el-bg-color-page) 100%);
+  border-radius: 8px;
+  border: 1px solid var(--el-color-primary-light-7);
+  overflow-x: auto;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Checkboxes - Task Lists */
+.notion-note-container input[type="checkbox"] {
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.notion-note-container input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  color: var(--el-text-color-secondary);
+}
+
+/* Print Styles - Clean Output */
+@media print {
+  .notion-note-container {
+    max-width: 100%;
+    padding: 0;
+    font-size: 12pt;
+  }
+  
+  .notion-note-container img,
+  .notion-note-container .mk-img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+  
+  .notion-note-container h1,
+  .notion-note-container h2,
+  .notion-note-container h3 {
+    page-break-after: avoid;
+  }
+  
+  .code-block-container,
+  .math-formula,
+  .math-block {
+    page-break-inside: avoid;
+  }
+}
+
+/* 深色模式適配 */
+@media (prefers-color-scheme: dark) {
+  .math-formula {
+    background: #2a2a2a;
+    border-color: #404040;
+  }
+  
+  .math-inline {
+    background: #2a2a2a;
+    border-color: #404040;
+  }
+  
+  .code-block-container {
+    background: #2a2a2a;
+    border-color: #404040;
+  }
+  
+  .code-block-header {
+    background: #1e1e1e;
+    border-color: #404040;
+  }
+  
+  .code-block-container pre {
+    background: #2a2a2a;
+  }
+  
+  .notion-note-container img,
+  .notion-note-container .mk-img {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .notion-note-container img:hover,
+  .notion-note-container .mk-img:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+}

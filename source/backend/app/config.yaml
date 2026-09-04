@@ -1,0 +1,65 @@
+runtime:
+  prefer_gpu: true
+  fallback_to_cpu: true
+  gpu_device: 0
+  log_summary: true
+  thermal_guard:
+    warn_temp_c: 75  # 🔧 緊急:提早預警
+    force_temp_c: 80  # 🔧 緊急:提前強制CPU
+    recover_temp_c: 70  # 🔧 緊急:保守恢復門檻
+    sustain_seconds: 30
+    check_interval_sec: 5
+    ocr_batch_reduction_ratio: 0.5
+    min_ocr_batch_size: 2
+    max_concurrency_cap: 4
+system:
+  num_workers: 4
+ocr:
+  enabled: false
+  engine: paddleocr-vl
+  primary_lang: japan
+  languages:
+  - japan
+  - ch
+  - en
+  use_gpu: false
+  device_id: 0
+  structured_ocr:
+    enabled: false
+  batch_size: 2  # 🔧 緊急降級:減少GPU負載
+  enable_angle_cls: false
+  use_textline_orientation: false
+  min_confidence: 0.35
+  layout:
+    enabled: false
+    ocr_version: PP-OCRv5
+    detect_tables: false
+    score_threshold: 0.3
+    model_dir: /app/data/models/paddleocr_vl/PP-DocLayoutV2
+  model_root: /app/data/models/paddleocr_vl
+llm:
+  prefer_gpu: true
+  provider: ollama
+  timeout: 1800  # 雲端大模型可能需要更長時間（30分鐘）
+  max_tokens: 8192  # 235B 可處理更長輸出
+  temperature: 0.7
+  ollama:
+    base_url: https://ollama.com/api  # 🔧 改用雲端服務
+    api_key: ${OLLAMA_API_KEY}  # 使用環境變數中的API密鑰
+    timeout: 1500  # 雲端請求超時設定(25分鐘)
+    supports_images: true
+    title: Ollama Cloud qwen3-vl-235B
+    models:
+    - qwen3-vl:235b-cloud
+    - qwen3-vl:4b  # 本地備援(如果雲端失敗)
+  scene_model: qwen3-vl:235b-cloud   # ✅ 雲端推理,本地GPU零負載
+  image_model: qwen3-vl:235b-cloud   # ✅ 雲端推理,本地GPU零負載
+  final_model: qwen3-vl:235b-cloud   # ✅ 雲端推理,本地GPU零負載
+output:
+  note_style: blueprint
+  prompt_profile: legacy
+  transcript_notes:
+    enabled: false
+    include_time_markers: true
+    include_screenshot_placeholders: true
+    include_ai_summary: true

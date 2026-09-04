@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主題系統測試</title>
+    <!-- 相對於專案根目錄載入前端樣式 -->
+    <link rel="stylesheet" href="../../frontend/src/styles/theme-unified.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all var(--transition-normal);
+        }
+        
+        .test-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        .status-display {
+            padding: 10px;
+            margin: 10px 0;
+            background: var(--surface-bg);
+            border-radius: var(--border-radius-sm);
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .color-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .color-box {
+            padding: 15px;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .bg-primary { background: var(--bg-color); color: var(--text-color); }
+        .bg-secondary { background: var(--bg-secondary); color: var(--text-color); }
+        .bg-card { background: var(--card-bg); color: var(--text-color); }
+        .bg-input { background: var(--input-bg); color: var(--text-color); }
+        .bg-button { background: var(--button-bg); color: var(--text-color); }
+        
+        .text-primary { color: var(--text-color); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-muted { color: var(--text-muted); }
+        
+        .border-test { border: 2px solid var(--border-color); }
+        .border-light { border: 2px solid var(--border-light); }
+        
+        .shadow-test { box-shadow: var(--shadow-md); }
+        .shadow-lg-test { box-shadow: var(--shadow-lg); }
+        
+        h1, h2, h3 { color: var(--text-color); }
+        p { color: var(--text-color); }
+        a { color: var(--primary-color); }
+        
+        .japanese-text { color: var(--japanese-color); }
+        .chinese-text { color: var(--chinese-color); }
+        
+        .success-text { color: var(--success-color); }
+        .warning-text { color: var(--warning-color); }
+        .danger-text { color: var(--danger-color); }
+        .info-text { color: var(--info-color); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎨 主題系統測試頁面</h1>
+        
+        <div class="test-section">
+            <h2>主題控制</h2>
+            <button class="test-button" onclick="toggleTheme()">切換主題</button>
+            <button class="test-button" onclick="setLight()">設為淺色</button>
+            <button class="test-button" onclick="setDark()">設為深色</button>
+            <div class="status-display" id="themeStatus">當前主題: <span id="currentTheme">loading...</span></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>顏色變數測試</h2>
+            <div class="color-test">
+                <div class="color-box bg-primary">主背景<br>--bg-color</div>
+                <div class="color-box bg-secondary">次背景<br>--bg-secondary</div>
+                <div class="color-box bg-card">卡片背景<br>--card-bg</div>
+                <div class="color-box bg-input">輸入框背景<br>--input-bg</div>
+                <div class="color-box bg-button">按鈕背景<br>--button-bg</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>文字顏色測試</h2>
+            <p class="text-primary">主要文字顏色 (--text-color)</p>
+            <p class="text-secondary">次要文字顏色 (--text-secondary)</p>
+            <p class="text-muted">弱化文字顏色 (--text-muted)</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>邊框測試</h2>
+            <div style="padding: 10px; margin: 10px 0;" class="border-test">標準邊框 (--border-color)</div>
+            <div style="padding: 10px; margin: 10px 0;" class="border-light">淺色邊框 (--border-light)</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>陰影測試</h2>
+            <div style="padding: 20px; margin: 10px 0; background: var(--card-bg);" class="shadow-test">中等陰影 (--shadow-md)</div>
+            <div style="padding: 20px; margin: 10px 0; background: var(--card-bg);" class="shadow-lg-test">大陰影 (--shadow-lg)</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>特殊顏色測試</h2>
+            <p class="japanese-text">日文顏色 (--japanese-color)</p>
+            <p class="chinese-text">中文顏色 (--chinese-color)</p>
+            <p class="success-text">成功顏色 (--success-color)</p>
+            <p class="warning-text">警告顏色 (--warning-color)</p>
+            <p class="danger-text">危險顏色 (--danger-color)</p>
+            <p class="info-text">資訊顏色 (--info-color)</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>間距和圓角測試</h2>
+            <div style="padding: var(--spacing-md); margin: var(--spacing-lg); border-radius: var(--border-radius-lg); background: var(--bg-secondary);">
+                使用CSS變數的間距和圓角
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>DOM狀態檢查</h2>
+            <div class="status-display" id="domStatus">DOM狀態: <span id="domInfo">loading...</span></div>
+        </div>
+    </div>
+
+    <script>
+        // 模擬統一主題系統的核心功能
+        function getCurrentTheme() {
+            return document.documentElement.getAttribute('data-theme') || 'light';
+        }
+        
+        function setTheme(theme) {
+            const html = document.documentElement;
+            const isDark = theme === 'dark';
+            
+            html.setAttribute('data-theme', theme);
+            html.classList.toggle('dark', isDark);
+            document.body.classList.toggle('dark-mode', isDark);
+            
+            // 保存到localStorage
+            localStorage.setItem('pref-theme', theme);
+            localStorage.setItem('theme', theme); // 保持兼容性
+            
+            updateStatus();
+        }
+        
+        function toggleTheme() {
+            const current = getCurrentTheme();
+            const next = current === 'dark' ? 'light' : 'dark';
+            setTheme(next);
+        }
+        
+        function setLight() {
+            setTheme('light');
+        }
+        
+        function setDark() {
+            setTheme('dark');
+        }
+        
+        function updateStatus() {
+            const current = getCurrentTheme();
+            document.getElementById('currentTheme').textContent = current;
+            
+            const domInfo = `
+                data-theme: ${document.documentElement.getAttribute('data-theme')}
+                html.dark: ${document.documentElement.classList.contains('dark')}
+                body.dark-mode: ${document.body.classList.contains('dark-mode')}
+                localStorage: ${localStorage.getItem('pref-theme')}
+            `;
+            document.getElementById('domInfo').textContent = domInfo;
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 嘗試從localStorage讀取主題
+            const saved = localStorage.getItem('pref-theme');
+            const theme = (saved === 'dark' || saved === 'light') ? saved : 'light';
+            setTheme(theme);
+            
+            updateStatus();
+        });
+        
+        // 監聽主題變化
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'data-theme') {
+                    updateStatus();
+                }
+            });
+        });
+        
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme', 'class']
+        });
+    </script>
+</body>
+</html>

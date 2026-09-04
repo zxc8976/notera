@@ -1,0 +1,342 @@
+/* 可列印、可評分（考點向）的深色主題系統 */
+
+/* 1) 主題變數 - WCAG AA 對比 */
+:root {
+  --bg: #0f1216;            /* 主背景 */
+  --card: #161a20;          /* 卡片背景 */
+  --fg: #e9eef5;            /* 主要文字 */
+  --muted: #9aa8b3;         /* 次要文字 */
+  --primary: #4ea4ff;       /* 主色 */
+  --accent: #22d3ee;        /* 強調色 */
+  --border: #2a2f3a;        /* 邊框 */
+  
+  /* 程式碼 token 顏色 */
+  --code-keyword: #c792ea;
+  --code-string: #ecc48d;
+  --code-number: #f78c6c;
+  --code-comment: #71839b;
+  
+  /* 間距系統 */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  
+  /* 圓角與陰影 */
+  --radius-xl: 14px;
+  --elevation-1: 0 1px 2px rgb(0 0 0 / .24);
+}
+
+/* 淺色主題 */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f7f8fa;
+  --fg: #121417;
+  --muted: #475569;
+  --primary: #2563eb;
+  --accent: #0891b2;
+  --border: #e2e8f0;
+}
+
+/* 2) 全域基礎樣式 */
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Noto Sans JP", "Noto Sans TC", sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* 3) 雙欄閱讀佈局 */
+.page {
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+}
+
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  position: relative;
+}
+
+/* 4) 卡片系統 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elevation-1);
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+  border: 1px solid var(--border);
+}
+
+.card-2 {
+  background: var(--card);
+  border-radius: 8px;
+  padding: var(--space-3);
+  margin: var(--space-2) 0;
+}
+
+/* 5) 標題系統 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin: var(--space-4) 0 var(--space-2) 0;
+  color: var(--fg);
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+
+/* 6) 程式碼區塊 */
+pre, code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  line-height: 1.7;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+pre {
+  padding: var(--space-3);
+  overflow-x: auto;
+  position: relative;
+}
+
+code {
+  padding: 2px 6px;
+  font-size: 12.5px;
+}
+
+/* 程式碼語法高亮 */
+.token.keyword { color: var(--code-keyword); }
+.token.string { color: var(--code-string); }
+.token.number { color: var(--code-number); }
+.token.comment { color: var(--code-comment); }
+
+/* 7) 表格系統 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-3) 0;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--card);
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* 8) 列表系統 */
+ul, ol {
+  margin: var(--space-2) 0;
+  padding-left: var(--space-4);
+}
+
+li {
+  margin: var(--space-1) 0;
+  line-height: 1.7;
+}
+
+/* 9) 考點徽章 */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: var(--space-1);
+}
+
+.badge-keypoint { background: rgba(78, 164, 255, 0.2); color: var(--primary); }
+.badge-warning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+.badge-trap { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+
+/* 10) 右側工具欄 */
+.right-sidebar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 280px;
+  z-index: 1000;
+}
+
+.fab-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1001;
+}
+
+/* 11) 響應式設計 */
+@media (max-width: 1280px) {
+  .right-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: var(--space-3);
+  }
+  
+  .card {
+    padding: var(--space-3);
+    margin: var(--space-3) 0;
+  }
+}
+
+/* 12) 列印樣式 */
+@media print {
+  .right-sidebar,
+  .fab-button {
+    display: none;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+  }
+  
+  pre, code {
+    break-inside: avoid;
+  }
+  
+  @page {
+    margin: 12mm;
+  }
+}
+
+/* 13) 錨點系統 */
+.anchor {
+  opacity: 0;
+  margin-left: var(--space-1);
+  color: var(--muted);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+h4:hover .anchor {
+  opacity: 1;
+}
+
+/* 14) 警告條 */
+.warning-bar {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: var(--space-2);
+  border-radius: 8px;
+  margin: var(--space-3) 0;
+}
+
+/* 15) 複製按鈕 */
+.copy-button {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--fg);
+}
+
+.copy-button:hover {
+  background: var(--border);
+}
+
+/* 16) 隱藏空區塊 */
+.empty-section {
+  display: none !important;
+}
+
+/* 17) 確保重點標記正確顯示 */
+b, strong {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+code {
+  background: var(--code-bg) !important;
+  color: var(--accent) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+/* 18) 改善段落間距 */
+.card p {
+  margin: var(--space-2) 0 !important;
+  line-height: 1.7 !important;
+}
+
+.card ul, .card ol {
+  margin: var(--space-3) 0 !important;
+  padding-left: var(--space-4) !important;
+}
+
+.card li {
+  margin: var(--space-1) 0 !important;
+}
+
+/* 19) 無程式碼提示樣式 */
+.no-code-message {
+  text-align: center;
+  padding: var(--space-4);
+  background: linear-gradient(135deg, var(--card) 0%, var(--surface-2) 100%);
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+}
+
+.info-icon {
+  font-size: 48px;
+  margin: 0 0 var(--space-2) 0;
+  opacity: 0.7;
+}
+
+.info-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.info-suggestion {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+  font-style: italic;
+}

@@ -1,0 +1,9 @@
+{
+  "lsp": {
+    "basedpyright": {
+      "disabled": false,
+      "command": ["basedpyright-langserver", "--stdio"],
+      "extensions": [".py", ".pyi"]
+    }
+  }
+}

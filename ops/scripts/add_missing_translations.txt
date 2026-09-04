@@ -1,0 +1,16 @@
+# 需要添加到所有語言的翻譯鍵
+
+## 系統診斷相關
+systemDiagnosis: 系統診斷 / System Diagnosis / システム診断 / 시스템 진단 / Chẩn đoán hệ thống / စနစ်စစ်ဆေးခြင်း / Системийн оношлогоо
+ollamaServiceStatus: Ollama 服務狀態 / Ollama Service Status / Ollama サービス状態 / Ollama 서비스 상태 / Trạng thái dịch vụ Ollama / Ollama ဝန်ဆောင်မှုအခြေအနေ / Ollama үйлчилгээний төлөв
+ollamaRunningNormally: Ollama 服務正常運行 / Ollama service running normally / Ollama サービス正常稼働 / Ollama 서비스 정상 작동 / Dịch vụ Ollama hoạt động bình thường / Ollama ဝန်ဆောင်မှု ပုံမှန်အလုပ်လုပ်နေသည် / Ollama үйлчилгээ хэвийн ажиллаж байна
+loadedModels: 已載入 {count} 個模型 / Loaded {count} models / {count}個のモデルを読み込み済み / {count}개 모델 로드됨 / Đã tải {count} mô hình / {count}ခုမော်ဒယ်များ တင်ဆောင်ပြီး / {count} загвар ачаалагдсан
+checkStatus: 檢查狀態 / Check Status / ステータス確認 / 상태 확인 / Kiểm tra trạng thái / အခြေအနေစစ်ဆေးရန် / Төлөв шалгах
+loadedModelList: 已載入模型 / Loaded Models / 読み込み済みモデル / 로드된 모델 / Các mô hình đã tải / တင်ဆောင်ပြီးမော်ဒယ်များ / Ачаалагдсан загварууд
+diagnosisResult: 診斷結果 / Diagnosis Result / 診断結果 / 진단 결과 / Kết quả chẩn đoán / စစ်ဆေးမှုရလဒ် / Оношлогооны үр дүн
+diagnosisFailed: 診斷失敗 / Diagnosis Failed / 診断失敗 / 진단 실패 / Chẩn đoán thất bại / စစ်ဆေးမှုမအောင်မြင်ပါ / Оношлогоо амжилтгүй
+
+## 學習主題相關
+learningTopic: 學習主題 / Learning Topic / 学習トピック / 학습 주제 / Chủ đề học tập / သင်ယူမှုခေါင်းစဉ် / Сургалтын сэдэв
+bilingualNotes: 雙語講義筆記 / Bilingual Lecture Notes / バイリンガル講義ノート / 이중 언어 강의 노트 / Ghi chú bài giảng song ngữ / နှစ်ဘာသာ ပို့ချချက် / Хоёр хэлний лекцийн тэмдэглэл
+lectureImage: 講義圖片 / Lecture Image / 講義画像 / 강의 이미지 / Hình ảnh bài giảng / ပို့ချချက်ရုပ်ပုံ / Лекцийн зураг

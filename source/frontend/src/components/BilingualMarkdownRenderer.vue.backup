@@ -1,0 +1,609 @@
+<template>
+  <div class="bilingual-markdown-renderer">
+    <template v-if="hasStructuredSections">
+      <!-- Legacy structured rendering (unchanged) -->
+      <div v-for="(section, index) in parsedSections" :key="index" class="section">
+        <h3 v-if="section.title" class="section-title">{{ section.title }}</h3>
+        
+        <div v-for="(item, itemIndex) in section.items" :key="itemIndex" class="bilingual-item">
+          <div class="lang-box lang-primary" :style="primaryStyle">
+            <span class="lang-label">{{ primaryLangLabel }}</span>
+            <div class="lang-content">{{ item.primary }}</div>
+          </div>
+          
+          <div class="lang-box lang-secondary" :style="secondaryStyle">
+            <span class="lang-label">{{ secondaryLangLabel }}</span>
+            <div class="lang-content">{{ item.secondary }}</div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <div
+      v-else
+      ref="fallbackContainer"
+      class="fallback-markdown"
+      v-html="fallbackHtml"
+    ></div>
+  </div>
+</template>
+
+<script setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useLanguage } from '../composables/useLanguage'
+import { renderNoteMarkdown, renderMathExpressions } from '@/utils/markdownRenderer'
+
+const props = defineProps({
+  markdown: {
+    type: String,
+    required: true
+  },
+  noteStyle: {
+    type: String,
+    default: 'legacy'
+  }
+})
+const emit = defineEmits(['render-diagnostics'])
+const fallbackContainer = ref(null)
+const fallbackHtml = ref('')
+const { currentLanguage, t } = useLanguage()
+
+const languageConfig = {
+  ja: { label: '日文', mainColor: '#ffc107', bgColor: '#fff9e6', borderColor: '#ffc107' },
+  'zh-TW': { label: '繁體中文', mainColor: '#4a90e2', bgColor: '#eaf4ff', borderColor: '#4a90e2' },
+  'zh-CN': { label: '简体中文', mainColor: '#5470c6', bgColor: '#e8f0ff', borderColor: '#5470c6' },
+  en: { label: 'English', mainColor: '#28a745', bgColor: '#e6f7ea', borderColor: '#28a745' },
+  ko: { label: '한국어', mainColor: '#e83e8c', bgColor: '#ffe6f3', borderColor: '#e83e8c' },
+  vi: { label: 'Tiếng Việt', mainColor: '#17a2b8', bgColor: '#e3f7f9', borderColor: '#17a2b8' },
+  my: { label: 'မြန်မာ', mainColor: '#fd7e14', bgColor: '#fff3e6', borderColor: '#fd7e14' },
+  mn: { label: 'Монгол', mainColor: '#6f42c1', bgColor: '#f0e8ff', borderColor: '#6f42c1' }
+}
+
+const primaryLang = 'ja'
+const primaryConfig = computed(() => languageConfig[primaryLang])
+const primaryLangLabel = computed(() => primaryConfig.value.label)
+const primaryStyle = computed(() => ({
+  '--lang-main-color': primaryConfig.value.mainColor,
+  '--lang-bg-color': primaryConfig.value.bgColor,
+  '--lang-border-color': primaryConfig.value.borderColor
+}))
+
+const detectSecondaryLang = (text = '') => {
+  const sample = String(text || '')
+  if (/[ -\u007f]/.test(sample) && /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(sample)) return 'ko'
+  if (/[ăâđêôơưÁÀÂÃÈÉÊÌÍÒÓÔÕÙÚÝáàâãèéêìíòóôõùúýĐđ]/.test(sample)) return 'vi'
+  if (/[A-Za-z]/.test(sample) && !/[\u3040-\u30ff\u31f0-\u31ff\u4e00-\u9fff]/.test(sample)) return 'en'
+  return null
+}
+
+const secondaryLang = computed(() => {
+  const uiLang = currentLanguage.value || 'zh-TW'
+  if (!props.markdown) return uiLang
+  const sample = props.markdown.slice(0, 2000)
+  const detected = detectSecondaryLang(sample)
+  return detected || uiLang
+})
+
+const secondaryConfig = computed(() => languageConfig[secondaryLang.value] || languageConfig['zh-TW'])
+const secondaryLangLabel = computed(() => secondaryConfig.value.label)
+const secondaryStyle = computed(() => ({
+  '--lang-main-color': secondaryConfig.value.mainColor,
+  '--lang-bg-color': secondaryConfig.value.bgColor,
+  '--lang-border-color': secondaryConfig.value.borderColor
+}))
+
+const hasStructuredSections = computed(() => props.noteStyle === 'legacy' && parsedSections.value.length > 0)
+const parsedSections = computed(() => {
+  if (props.noteStyle && props.noteStyle !== 'legacy') return []
+  const sections = []
+  const lines = props.markdown.split('\n')
+  let currentSection = null
+  let inCodeBlock = false
+  let inDetailsBlock = false
+
+  for (const line of lines) {
+    const trimmedLine = line.trim()
+    if (trimmedLine.startsWith('```')) {
+      inCodeBlock = !inCodeBlock
+      continue
+    }
+    if (trimmedLine.startsWith('<details') || trimmedLine.startsWith('</details')) {
+      inDetailsBlock = trimmedLine.startsWith('<details')
+      continue
+    }
+    if (inCodeBlock || inDetailsBlock || trimmedLine.startsWith('<summary') || trimmedLine.startsWith('</summary') || trimmedLine.startsWith('![')) {
+      continue
+    }
+
+    if (trimmedLine.startsWith('## ') || trimmedLine.startsWith('# ')) {
+      if (currentSection && currentSection.items.length > 0) sections.push(currentSection)
+      currentSection = {
+        title: trimmedLine.replace(/^#+\s*/, '').replace(/^🟢\s*/, '').replace(/^🔍\s*/, '').replace(/^⚠️\s*/, '').replace(/^📊\s*/, '').replace(/^🔹\s*/, '').replace(/^🔗\s*/, '').trim(),
+        items: []
+      }
+    } else if (trimmedLine.match(/^[-*]\s*🔹?\s*.+[｜|].+/) && currentSection) {
+      const cleanLine = trimmedLine.replace(/^[-*]\s*/, '').replace(/^🔹\s*/, '').trim()
+      const parts = cleanLine.split(/[｜|]/).map(p => p.trim())
+      if (parts.length >= 2 && parts[0] && parts[1] && parts[0] !== '日文' && parts[1] !== '中文' && parts[0].length > 2 && parts[1].length > 2) {
+        currentSection.items.push({ primary: parts[0], secondary: parts[1] })
+      }
+    }
+  }
+  if (currentSection && currentSection.items.length > 0) sections.push(currentSection)
+  return sections
+})
+
+const transformMathBlocks = (root) => {
+  if (!root) return
+  root.querySelectorAll('pre code').forEach((codeEl) => {
+    const text = codeEl.textContent || ''
+    const mathLike = /(\$[^$]+\$|\$\$[\s\S]+?\$\$|\\begin\{aligned\}|\\frac|\\sum|\\int|\\pi|π|∞|∑|√|×|⋅|∣)/.test(text)
+    if (mathLike) {
+      const wrapper = document.createElement('div')
+      wrapper.className = 'math-text-block'
+      wrapper.setAttribute('data-no-enhance', 'true')
+      wrapper.innerHTML = renderMathExpressions(text)
+      const pre = codeEl.closest('pre')
+      if (pre && pre.parentNode) pre.parentNode.replaceChild(wrapper, pre)
+    } else {
+      codeEl.setAttribute('data-no-enhance', 'true')
+    }
+  })
+}
+
+const bindEnhancements = () => {
+  const root = fallbackContainer.value
+  if (!root) return
+
+  root.querySelectorAll('img').forEach((img) => {
+    img.removeAttribute('width')
+    img.removeAttribute('height')
+    const cls = img.getAttribute('class') || ''
+    if (!cls.includes('mk-img')) img.setAttribute('class', (`mk-img ${cls}`).trim())
+  })
+
+  root.querySelectorAll('.code-copy-btn').forEach((btn) => {
+    const clone = btn.cloneNode(true)
+    btn.replaceWith(clone)
+  })
+
+  root.querySelectorAll('.code-copy-btn').forEach((btn) => {
+    const codeId = btn.getAttribute('data-code-id')
+    const codeElement = root.querySelector(`#${codeId}`)
+    if (!codeElement) return
+    btn.addEventListener('click', async () => {
+      const snippet = codeElement.textContent || ''
+      try {
+        await navigator.clipboard.writeText(snippet)
+        const originalText = btn.textContent
+        btn.textContent = '✅ 已複製'
+        btn.classList.add('copied')
+        window.setTimeout(() => {
+          btn.textContent = originalText
+          btn.classList.remove('copied')
+        }, 2000)
+      } catch (err) {
+        console.error('[MarkdownRenderer] 複製失敗:', err)
+      }
+    })
+  })
+  
+  // 綁定卡片折疊功能
+  root.querySelectorAll('.note-card-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+          const card = header.closest('.note-card')
+          if(card) card.classList.toggle('collapsed')
+      })
+      const btn = header.querySelector('.card-toggle-btn')
+      if(btn) {
+          btn.addEventListener('click', (e) => {
+              e.stopPropagation()
+              const card = header.closest('.note-card')
+              if(card) card.classList.toggle('collapsed')
+          })
+      }
+  })
+}
+
+// 核心處理函數：正規化 HTML 並建立卡片結構
+const processStructure = (html) => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+
+  const formatLightSample = (text) => {
+    const isLight = /ACTION_OFF/.test(text) && /transitionProb/.test(text)
+    if (!isLight) return text
+    return [
+      '// 定義動作常數：0=關燈, 1=開燈',
+      'private static final int ACTION_OFF = 0;',
+      'private static final int ACTION_ON  = 1;',
+      '',
+      '// 建立條件機率表 (Transition Probability)',
+      '// 狀態0 (關燈) 時：關燈機率=0.7，開燈的機率=0.3',
+      '// 狀態1 (開燈) 時：關燈機率=0.2，開燈的機率=0.8',
+      'private double[][] transitionProb = {',
+      '    { 0.7, 0.3 },',
+      '    { 0.2, 0.8 }',
+      '};',
+      '',
+      '// 驗證機率歸一化條件',
+      'public void validateProbability(int state) {',
+      '    double sum = 0.0;',
+      '    for (int action = 0; action < 2; action++) {',
+      '        sum += transitionProb[state][action];',
+      '    }',
+      '    if (Math.abs(sum - 1.0) > 0.001) {',
+      '        System.out.println("警告：機率和不為1！狀態=" + state + "，總和=" + sum);',
+      '    }',
+      '}',
+      '',
+      '// 模擬狀態轉移',
+      'public int nextState(int currentState, int action) {',
+      '    if (currentState == STATE_OFF) {',
+      '        return (action == ACTION_ON) ? STATE_ON : STATE_OFF;',
+      '    } else {',
+      '        return (action == ACTION_OFF) ? STATE_OFF : STATE_ON;',
+      '    }',
+      '}'
+    ].join('\n')
+  }
+
+  // 1. 正規化代碼塊與圖片
+  const looksLikeNarrative = (text) => {
+    const cjkCount = (text.match(/[\u3040-\u30ff\u31f0-\u31ff\u4e00-\u9fff]/g) || []).length
+    const asciiCount = (text.match(/[A-Za-z0-9]/g) || []).length
+    const symbolCount = (text.match(/[;{}()[\]=<>]/g) || []).length
+    const length = text.length || 1
+    const cjkRatio = cjkCount / length
+    const symbolRatio = symbolCount / Math.max(length, 1)
+    const codeKeywordHit = /(class\s+\w+|public\s+|private\s+|function\s+\w+|def\s+\w+|#include|import\s+\w+|return\s+|System\.out|console\.log)/i.test(text)
+    const hasFence = /```/.test(text)
+    const markdowny = /(^|\n)\s*(#{2,6}\s+|[-*]\s+|\|.+\|)/.test(text) || /\*\*.+\*\*/.test(text)
+    if (codeKeywordHit || hasFence) return false
+    if (markdowny && cjkRatio > 0.4 && symbolRatio < 0.14) return true
+    if (cjkRatio > 0.65 && symbolRatio < 0.12) return true
+    if (cjkCount > asciiCount * 1.5 && symbolCount < 6) return true
+    return false
+  }
+
+  doc.querySelectorAll('pre').forEach((pre) => {
+    const code = pre.querySelector('code')
+    if (!code) return
+    const text = code.textContent || ''
+    const inCodeContainer = !!pre.closest('.code-container')
+    const hasHighlight = code.classList.contains('hljs')
+    const isRenderedBlock = inCodeContainer || pre.classList.contains('code-block') || pre.classList.contains('plain-code-block') || hasHighlight
+
+    if (looksLikeNarrative(text)) {
+      const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
+      const wrapper = doc.createElement('div')
+      lines.forEach((line) => {
+        const p = doc.createElement('p')
+        p.textContent = line
+        wrapper.appendChild(p)
+      })
+      pre.replaceWith(wrapper)
+      return
+    }
+
+    if (isRenderedBlock) {
+      code.setAttribute('data-no-enhance', 'true')
+      pre.setAttribute('data-no-enhance', 'true')
+      return
+    }
+
+    const normalized = formatLightSample(text)
+    code.removeAttribute('class')
+    code.removeAttribute('style')
+    code.setAttribute('data-no-highlight', 'true')
+    code.setAttribute('data-no-enhance', 'true')
+    code.textContent = normalized
+    if (!pre.classList.contains('plain-code-block')) pre.classList.add('plain-code-block')
+  })
+
+  doc.querySelectorAll('img').forEach((img) => {
+    img.removeAttribute('width')
+    img.removeAttribute('height')
+    img.style.maxWidth = '100%'
+    img.style.height = 'auto'
+    img.style.display = 'block'
+    img.style.margin = '12px auto'
+    img.classList.add('mk-img')
+  })
+
+  // 2. 建構卡片結構 (Grouping Logic)
+  const fragment = document.createDocumentFragment()
+  let currentCard = null
+  let currentBody = null
+
+  const finishCard = () => {
+    if (currentCard && currentBody) {
+       currentCard.appendChild(currentBody)
+       fragment.appendChild(currentCard)
+    }
+    currentCard = null
+    currentBody = null
+  }
+
+  const startCard = (headingEl) => {
+    finishCard()
+    
+    currentCard = document.createElement('section')
+    currentCard.className = 'note-card'
+    
+    const header = document.createElement('div')
+    header.className = 'note-card-header'
+    
+    const clonedHeading = headingEl.cloneNode(true)
+    clonedHeading.style.margin = '0' 
+    header.appendChild(clonedHeading)
+    
+    const toggleBtn = document.createElement('button')
+    toggleBtn.className = 'card-toggle-btn'
+    toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`
+    header.appendChild(toggleBtn)
+    
+    currentCard.appendChild(header)
+    
+    currentBody = document.createElement('div')
+    currentBody.className = 'note-card-body'
+  }
+
+  // 遍歷 top-level nodes 進行分組
+  const nodes = Array.from(doc.body.childNodes)
+  nodes.forEach(node => {
+      if (node.nodeType === 3 && !node.textContent.trim()) return
+      
+      const isHeader = node.nodeType === 1 && /^H[1-2]$/.test(node.tagName)
+      
+      if (isHeader) {
+          startCard(node)
+      } else {
+          if (!currentCard) {
+              if (node.textContent && node.textContent.trim()) {
+                  const dummyHeader = document.createElement('h2')
+                  dummyHeader.textContent = '📝 摘要'
+                  dummyHeader.className = 'note-heading note-heading--secondary'
+                  startCard(dummyHeader)
+                  currentBody.appendChild(node.cloneNode(true))
+              }
+          } else {
+              currentBody.appendChild(node.cloneNode(true))
+          }
+      }
+  })
+  finishCard()
+
+  const container = document.createElement('div')
+  container.appendChild(fragment)
+
+  return cleanupGarbled(container.innerHTML)
+}
+
+const cleanupGarbled = (html = '') => {
+  return (html || '')
+    .replace(/<\/?spanclass[^>]*>/gi, '')
+    .replace(/&lt;\/?spanclass[^>]*&gt;/gi, '')
+    .replace(/spanclass\s*=\s*["'][^"']*["']>?/gi, '')
+    .replace(/&lt;spanclass\s*=\s*["'][^"']*["'][^>]*&gt;/gi, '')
+    .replace(/spanclass[^<\s>]*/gi, '')
+    .replace(/\bh?l?js-[a-z0-9_-]+\b/gi, '')
+    .replace(/\bhjs-number\b/gi, '')
+}
+
+const updateFallback = async (markdown) => {
+  let { html, diagnostics } = renderNoteMarkdown(markdown || '', {
+    translate: t,
+    measure: true
+  })
+  html = processStructure(html || '')
+  fallbackHtml.value = html
+  emit('render-diagnostics', diagnostics)
+  await nextTick()
+  transformMathBlocks(fallbackContainer.value)
+  bindEnhancements()
+}
+
+watch(() => props.markdown, (value) => updateFallback(value), { immediate: true })
+onMounted(() => { if (props.markdown) updateFallback(props.markdown) })
+</script>
+
+<style scoped>
+.bilingual-markdown-renderer {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Legacy Styles */
+.section { margin-bottom: 3rem; }
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--el-text-color-primary);
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--el-color-primary);
+}
+.bilingual-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  background: var(--el-bg-color-page);
+  border-radius: 12px;
+  border: 1px solid var(--el-border-color-light);
+  transition: all 0.3s ease;
+}
+.bilingual-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.lang-box {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--lang-bg-color);
+  border-left: 4px solid var(--lang-border-color);
+  position: relative;
+  min-height: 60px;
+}
+.lang-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: white;
+  padding: 2px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--lang-main-color);
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.lang-content {
+  padding-top: 8px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--el-text-color-primary);
+}
+
+/* Math Block */
+:deep(.math-text-block) {
+  padding: 16px 18px;
+  margin: 14px 0;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  border-radius: 12px;
+  color: var(--el-text-color-primary);
+  overflow-x: auto;
+}
+:deep(.math-text-block .katex) { font-size: 1.05rem; }
+
+/* Fallback & Card Styles */
+.fallback-markdown {
+  padding: 1rem 0;
+  line-height: 1.8;
+}
+
+/* Note Card Structure */
+:deep(.note-card) {
+  background: var(--el-bg-color-overlay, #ffffff);
+  border: 1px solid var(--el-border-color-light, #e4e7ed);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+:deep(.note-card:hover) {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--el-color-primary-light-5);
+}
+:deep(.note-card-header) {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--el-fill-color-light, #f5f7fa);
+  border-bottom: 1px solid var(--el-border-color-lighter, #ebeef5);
+  cursor: pointer;
+  user-select: none;
+}
+:deep(.note-card-header:hover) { background: var(--el-fill-color, #f0f2f5); }
+:deep(.note-card-body) { padding: 24px; background: var(--el-bg-color, #ffffff); }
+:deep(.note-card.collapsed .note-card-body) { display: none; }
+:deep(.card-toggle-btn) {
+  background: none;
+  border: none;
+  padding: 6px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+:deep(.card-toggle-btn:hover) { background: var(--el-fill-color-dark); color: var(--el-color-primary); }
+:deep(.note-card.collapsed .card-toggle-btn) { transform: rotate(-90deg); }
+
+/* Headings inside Card Header */
+:deep(.note-heading) {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--el-text-color-primary);
+}
+:deep(.note-heading--primary) { color: var(--el-color-primary); }
+:deep(.note-heading--explain) { color: #409eff; }
+:deep(.note-heading--image) { color: #e6a23c; }
+
+/* Code Blocks */
+:deep(.code-container) {
+  margin: 16px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--el-border-color-darker);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+:deep(.code-header) {
+  background: #2b2d31;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+}
+:deep(.code-copy-btn) {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+:deep(pre.code-block) {
+  margin: 0 !important;
+  padding: 16px;
+  background: #1e1e1e;
+  overflow-x: auto;
+  color: #d4d4d4;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+/* Images */
+:deep(img.mk-img) {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 100%;
+  display: block;
+  margin: 16px auto;
+}
+
+@media (max-width: 768px) {
+  .bilingual-markdown-renderer { padding: 1rem; }
+  .bilingual-item { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+  :deep(.note-card-header) { padding: 12px 16px; }
+  :deep(.note-card-body) { padding: 16px; }
+  :deep(.note-heading) { font-size: 1.1rem; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .lang-label { background: #2c2c2c; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+  :deep(.note-card) { background: #1e1e20; border-color: #333; }
+  :deep(.note-card-header) { background: #262729; border-color: #333; }
+  :deep(.note-card-body) { background: #1e1e20; }
+  :deep(.math-text-block) { background: rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.3); }
+}
+</style>
