@@ -62,8 +62,8 @@ The default local model is `qwen3-vl:4b`. Systems with additional VRAM can use a
 ### Start NOTERA
 
 ```bash
-git clone https://github.com/zxc8976/auto-note-guardian.git
-cd auto-note-guardian
+git clone https://github.com/zxc8976/notera.git
+cd notera
 cp .env.example .env
 bash ops/scripts/setup_llm_services.sh
 ```
